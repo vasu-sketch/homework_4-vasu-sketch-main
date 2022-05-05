@@ -95,7 +95,7 @@ class Filtering:
             l.append(roi[i,j])
         #sorting the list values
         ln = len(l)
-        for i in range(len):
+        for i in range(ln):
             for j in range(i):
                 if l[j] >= l[i]:
                     temp = l[j]
@@ -153,14 +153,23 @@ class Filtering:
         image = self.image
         shape = image.shape
         size = self.filter_size
-        im = np.zeros((shape[0],shape[1]))
-        l  = size%2
-        l1 = size//2
-        for i in range(shape[0]):
-            for j in range(shape[1]):
-                temp = image[i - l1 if i > l1 else 0: i + l1 + l,j - l1 if j > l1 else 0: j + l1 + l]
-                z = self.filter(temp)
-                im[i,j] = z
 
-        return im
+        l  = size -1
+        l1 = l//2
+        pd_image = np.zeros((shape[0]+l,shape[1]+l))
+        pd_image[l1:l1+shape[0],l1:l1+shape[1]] = image
+        out = np.zeros((shape[0],shape[1]))
+
+        for i in range(l1,l1+shape[0]):
+            for j in range(l2,l2+shape[0]):
+               kernel = []
+               for m in range(size):
+                 for n in range(size):
+                  p = m - l1
+                  r = n - l1
+                  kernel.append(pd_image[i+p,j+r])
+               k = self.filter(kernel)
+               out[i-l1,j-l1] = k
+
+        return out
 
